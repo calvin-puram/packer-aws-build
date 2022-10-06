@@ -1,0 +1,13 @@
+[Unit]
+Description=Deregister runner before shutdown
+After=network.target network-online.target nss-lookup.target local-fs.target remote-fs.target
+
+[Service]
+User=runner
+Type=oneshot
+RemainAfterExit=true
+WorkingDirectory=/home/runner
+ExecStop=bash deregister-runner.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,84 @@
+- name: Install dependencies
+  become_user: root
+  become: true
+  apt:
+    force_apt_get: yes
+    update_cache: yes
+    pkg:
+      - acl
+      - ansible
+      - build-essential
+      - jq
+      - packer
+      - python3-pip
+      - zip
+      - cmake
+      - pkg-config
+      - libssl-dev
+      - git
+      - clang
+      - libclang-dev
+      - curl
+      - supervisor
+      
+
+# - name: Copy ansible config
+#   copy:
+#     src: ansible.cfg
+#     dest: /etc/ansible/
+#     owner: root
+#     group: root
+
+- name: Add composable user
+  become: true
+  user:
+    name: composable
+    groups: # Empty by default, here we give it some groups
+      - docker
+      - sudo
+    state: present
+    # shell: /bin/bash       # Defaults to /bin/bash
+    system: no # Defaults to no
+    createhome: yes # Defaults to yes
+    home: /home/composable # Defaults to /home/<username>
+    generate_ssh_key: true
+
+- name: Copy Rust Installation Script
+  become: true
+  copy:
+    src: install-rust.sh
+    dest: /home/composable
+    owner: composable
+    mode: 0755
+
+- name: Install Rust
+  become: true
+  become_user: root
+  shell: /home/composable/install-rust.sh
+  args:
+    executable: /bin/bash
+
+- name: export path
+  become: true
+  become_user: root
+  shell: export PATH='/home/composable/.cargo/bin:$PATH'
+
+- name: Creates directory
+  become: true
+  become_user: composable
+  file:
+    path: /home/composable/data
+    state: directory
+
+- name: Download composable using get_url
+  # become_user: composable
+  become: true
+  get_url:
+    url: https://github.com/ComposableFi/composable/releases/download/{{composable_version}}/composable
+    dest: /usr/local/bin
+    mode: 0755
+
+- name: Composable check
+  become_user: composable
+  shell: composable --version
+

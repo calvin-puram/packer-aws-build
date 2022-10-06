@@ -1,0 +1,7 @@
+# Github Actions runner image based on ubuntu-20
+- name: github-actions-runner
+  become: yes
+  hosts: all
+  roles:
+    - github-actions-runner
+    - docker

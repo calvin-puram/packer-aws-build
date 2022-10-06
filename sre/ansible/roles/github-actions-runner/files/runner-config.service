@@ -1,0 +1,16 @@
+[Unit]
+Description=Github Actions runner config
+Requires=network-online.target
+ConditionPathExists=!/home/runner/svc.sh
+
+[Service]
+EnvironmentFile=/home/runner/env
+Restart=on-failure
+RestartSec=2s
+User=runner
+Type=oneshot
+WorkingDirectory=/home/runner
+ExecStart=bash configure-runner.sh
+
+[Install]
+WantedBy=runner.service

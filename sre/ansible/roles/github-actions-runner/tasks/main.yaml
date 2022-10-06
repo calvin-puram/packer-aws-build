@@ -1,0 +1,113 @@
+- name: Install dependencies
+  apt:
+    force_apt_get: yes
+    update_cache: yes
+    pkg:
+      - acl
+      - ansible
+      - build-essential
+      - jq
+      - packer
+      - python3-pip
+      - zip
+      - cmake
+      - pkg-config
+      - libssl-dev
+      - git
+      - clang
+      - libclang-dev
+      - curl
+
+- name: Copy ansible config
+  copy:
+    src: ansible.cfg
+    dest: /etc/ansible
+    owner: root
+    group: root
+
+- name: Add runner user
+  user:
+    name: runner
+
+- name: Copy Rust Installation Script
+  copy:
+    src: install-rust.sh
+    dest: /home/runner
+    owner: runner
+    mode: 0755
+
+# - name: Install Rust
+#   become_user: runner
+#   shell: /home/runner/install-rust.sh
+#   args: 
+#     executable: /bin/bash
+
+- name: Download and extract github runner
+  become: yes
+  unarchive: 
+    remote_src: yes
+    src: https://github.com/actions/runner/releases/download/v2.282.1/actions-runner-linux-x64-2.282.1.tar.gz
+    dest: /home/runner
+    mode: 0755
+
+- name: Install github action runner dependencies
+  become: true
+  shell: /home/runner/bin/installdependencies.sh
+  args: 
+    executable: /bin/bash
+    
+- name: Copy runner config Script
+  copy:
+    src: configure-runner.sh
+    dest: /home/runner
+    owner: runner
+    group: 0755
+    
+- name: Copy runner config service
+  copy: 
+    src: runner-config.service
+    dest:  /etc/systemd/system
+    owner: root
+    group: root
+  
+- name: Enable runner config
+  systemd: 
+    name: runner-config.service
+    enabled: yes
+
+
+- name: Copy runner.service
+  copy:
+    src: runner.service
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+
+- name: Enable runner.service
+  systemd:
+    name: runner.service
+    enabled: yes
+
+- name: Copy deregister-runner.service
+  copy:
+    src: deregister-runner.service
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+
+- name: Enable deregister-runner.service
+  systemd:
+    name: deregister-runner.service
+    enabled: yes
+    
+- name: Copy docker-config.service
+  copy:
+    src: docker-config.service
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+
+- name: Enable docker-config.service
+  systemd:
+    name: docker-config.service
+    enabled: yes

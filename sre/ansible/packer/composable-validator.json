@@ -1,0 +1,40 @@
+{
+  "builders": [
+    {
+      "ami_name": "composable-{{timestamp}}",
+      "instance_type": "t3.micro",
+      "region": "us-east-1",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "aerospike-ubuntu-20.04-20210322180709",
+          "root-device-type": "ebs"
+        },
+        "owners": ["262212597706"],
+        "most_recent": true
+      },
+      "ssh_username": "ubuntu",
+      "type": "amazon-ebs",
+      "ami_description": "Composable  Image",
+      "run_tags": { "Name": "packer-aws-image" }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "user": "ubuntu",
+      "playbook_file": "../roles/validator.yaml",
+      "extra_arguments": [
+        "-vvv",
+        "--extra-vars",
+        "docker_compose_version=1.29.1"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "packer-manifest.json"
+    }
+  ]
+}

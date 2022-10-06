@@ -1,0 +1,39 @@
+{
+  "builders": [
+    {
+      "metadata": {
+        "enable-oslogin": "FALSE"
+      },
+
+      "image_description": "Composable Image",
+      "image_name": "composable-v1",
+      "project_id": "blockops-354106",
+      "service_account_email": "packer-build@blockops-354106.iam.gserviceaccount.com",
+      "source_image": "ubuntu-2004-focal-v20210415",
+      "ssh_username": "ubuntu",
+      "network": "blockops",
+      "subnetwork": "blockops",
+      "tags": "packer",
+      "type": "googlecompute",
+      "zone": "us-central1-a"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "user": "ubuntu",
+      "playbook_file": "../roles/validator.yaml",
+      "extra_arguments": [
+        "-vvv",
+        "--extra-vars",
+        "docker_compose_version=1.29.1"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "packer-manifest.json"
+    }
+  ]
+}

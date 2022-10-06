@@ -1,0 +1,13 @@
+[Unit]
+Description=Configure docker
+Requires=network-online.target
+
+[Service]
+Restart=on-failure
+RestartSec=2s
+User=runner
+Type=oneshot
+ExecStart=bash -c 'gcloud auth configure-docker -q'
+
+[Install]
+WantedBy=multi-user.target

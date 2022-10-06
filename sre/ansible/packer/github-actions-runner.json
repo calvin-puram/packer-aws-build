@@ -1,0 +1,36 @@
+{
+    "builders": [
+      {
+        "metadata": {
+          "enable-oslogin": "FALSE"
+        },
+        "image_description": "Github Actions Runner Image",
+        "image_name": "github-actions-runner-{{timestamp}}",
+        "project_id": "academic-timing-326112",
+        "service_account_email": "github-actions@academic-timing-326112.iam.gserviceaccount.com",
+        "source_image": "ubuntu-2004-focal-v20210415",
+        "ssh_username": "ubuntu",
+        "tags": "packer",
+        "type": "googlecompute",
+        "zone": "us-west1-a"
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "ansible",
+        "user": "ubuntu",
+        "playbook_file": "./github-actions-runner.yaml",
+        "extra_arguments": [
+          "-vvv",
+          "--extra-vars",
+          "docker_compose_version=1.29.1"
+        ]
+      }
+    ],
+    "post-processors": [
+      {
+        "type": "manifest",
+        "output": "packer-runner-manifest.json"
+      }
+    ]
+  }

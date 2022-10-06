@@ -1,0 +1,8 @@
+# Github Actions runner image based on ubuntu-20
+- name: composable-validator
+  become_user: root
+  hosts: all
+  vars:
+    - composable_version: "v2.2.1"
+  roles:
+    - composable-binary

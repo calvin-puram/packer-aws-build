@@ -1,0 +1,20 @@
+[Unit]
+Description=Github Actions runner
+Requires=network-online.target
+After=runner-config.service
+
+[Service]
+Type=simple
+User=runner
+KillMode=process
+KillSignal=SIGTERM
+WorkingDirectory=/home/runner
+TimeoutStopSec=5min
+ExecStartPre=test -f /home/runner/svc.sh
+ExecStart=sh -c './externals/node12/bin/node ./bin/RunnerService.js'
+ExecStopPost=/home/runner/deregister-runner.sh
+Restart=on-failure
+RestartSec=2s
+
+[Install]
+WantedBy=multi-user.target

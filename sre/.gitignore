@@ -1,0 +1,14 @@
+.idea/
+.terraform/
+*.tfplan
+*.tfstate*
+*.DS_Store
+.vscode
+*.code-workspace
+key.json
+.envrc
+.terraform-version
+.credentials/
+*.terraform.lock.hcl
+ansible/velero-**
+ansible/velero-project-73f7d4d9105b.json
